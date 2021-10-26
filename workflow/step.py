@@ -1,6 +1,5 @@
 
 from typing import List
-from Status import Status
 
 class Step:
     """
