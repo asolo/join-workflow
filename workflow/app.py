@@ -1,7 +1,7 @@
 from flask import app, request
 from flask import Flask
 import json
-from utils import Utils
+from methods import Methods
 
 app = Flask(__name__)
 
@@ -34,8 +34,8 @@ def steps():
             WORKFLOW[step_id] = list(convertedDict.values())[0]
 
             # Validate: check circular dependencies
-            utils = Utils()
-            if utils.hasCircularDependency(workflow=WORKFLOW, curr_id=None, steps_seen=set()):
+            methods = Methods()
+            if methods.hasCircularDependency(workflow=WORKFLOW, curr_id=None, steps_seen=set()):
                 
                 # remove the added step with circular dependency
                 del WORKFLOW[step_id]
@@ -48,9 +48,8 @@ def steps():
     else:
 
         # prior to returning a GET, set the status object within each step
-        utils = Utils()
-        return utils.getUpdatedStatusOfSteps(WORKFLOW)
-
+        methods = Methods()
+        return methods.getUpdatedStatusOfSteps(WORKFLOW)
 
 @app.route('/step/<string:id>', methods=['DELETE'])
 def step(id):

@@ -1,17 +1,17 @@
+class Methods:
 
-class Utils:
-    def hasCircularDependency(self, workflow, curr_id=None, steps_seen=set()):
+    def hasCircularDependency(self, workflow):
         
-        # if step_id is None, choose a step that has not been visited
-        if curr_id is None:
-            for step_id in workflow.keys():
-                if step_id not in steps_seen:
-                    curr_id = step_id
+        # loop through each step in the workflow graph and test circular dependency chains
+        for step_id in workflow.keys():
+            if self.hasCircularDependencyStep(workflow, step_id, set()):
+                return True
 
-        # break when all steps have been visited
-        if curr_id is None:
-            return False
+        # we made it through the whole graph with no circular dependencies 
+        return False
 
+    def hasCircularDependencyStep(self, workflow, curr_id, steps_seen=set()):
+        
         # list dependencies of current step
         depends_on = workflow[curr_id]["depends_on"]
 
@@ -26,17 +26,16 @@ class Utils:
         for next_id in depends_on:
             
             if next_id in workflow.keys():
-                return self.hasCircularDependency(workflow, next_id, steps_seen)
+                return self.hasCircularDependencyStep(workflow, next_id, steps_seen)
 
         # We made it to the end of this chain with no circular dependencies    
-        return self.hasCircularDependency(workflow=workflow, steps_seen=steps_seen)
+        return False
 
     def getUpdatedStatusOfSteps(self, workflow):
 
         # traverse each step
         for step_id in workflow:
             step = workflow[step_id]
-            print(step)
             depends_on = step["depends_on"]
             error = False
 
