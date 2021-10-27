@@ -25,7 +25,6 @@ Finally, the DELETE endpoint will remove a single step by including the Id at th
 ### notes
 This API is only configured to run locally. This API is also using a temporary in-memory data store, so each time the app is restarted, the datastore (containing the workflow graph) will be empty. 
 
-
 # prerequisites:
 python 3.x
 
@@ -40,10 +39,9 @@ Then activate the venv:
 $ . venv/bin/activate
 ```
 
-Install requirements to your venv:
+Install requirements to your venv (Flask and pytest):
 ```bash
-$ pip install Flask
-$ pip install pytest
+$ pip install -r requirements.txt
 ```
 
 Start the application by running:
