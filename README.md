@@ -31,7 +31,9 @@ python 3.x
 
 # how to configure and launch application
 Navigate to the root directory of `join-workflows` and create a virtual environment with
-```$ python3 -m venv venv```
+```bash
+$ python3 -m venv venv
+```
 
 Then activate the venv:
 ```$ . venv/bin/activate```
