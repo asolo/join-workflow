@@ -1,11 +1,10 @@
 import os
-import pytest
 import sys
 import unittest
 
 sys.path.append(os.path.join(os.path.abspath(os.path.curdir), '..'))
 
-import workflow
+from workflow.utils import Utils
 
 class TestMethods(unittest.TestCase):
 
@@ -18,11 +17,42 @@ class TestMethods(unittest.TestCase):
                             "id4" : {"depends_on": []}\
                         }
 
+        test = Utils()
+
         # act
-        result = workflow.hasCircularDependency(input_workflow)
+        result = test.hasCircularDependency(input_workflow, None, set())
 
         # assert
-        assert result == True
+        self.assertTrue(result)
+
+    def test_hasCircularDependency_whenCircularButDifferentOrder(self):
+
+        input_workflow = {\
+                            "id4" : {"depends_on": []},\
+                            "id1" : {"depends_on": ["id2"]},\
+                            "id2" : {"depends_on": ["id3", "id4"]},\
+                            "id3" : {"depends_on": ["id1"]},\
+                        }
+        test = Utils()
+
+        # act
+        result = test.hasCircularDependency(input_workflow, None, set())
+
+        # assert
+        self.assertTrue(result)
+
+    def test_hasCircularDependency_whenCircular_withOneStep(self):
+
+        input_workflow = {\
+                            "id4" : {"depends_on": ["id4"]}
+                        }
+        test = Utils()
+
+        # act
+        result = test.hasCircularDependency(input_workflow, None, set())
+
+        # assert
+        self.assertTrue(result)
 
 if __name__ == '__main__':
     unittest.main()
