@@ -7,10 +7,6 @@ app = Flask(__name__)
 # this is a placeholder datastore
 WORKFLOW = {}
 
-@app.route('/')
-def index():
-    return jsonify({'hello': 'world'})
-
 @app.route('/steps', methods=['GET', 'POST'])
 def steps():
     if request.method == 'POST':
