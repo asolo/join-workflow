@@ -71,7 +71,7 @@ class TestMethods(unittest.TestCase):
         # assert
         self.assertTrue(result)
 
-    def test_getUpdatedStatusOfSteps_WhenStatus(self):
+    def test_getUpdatedStatusOfSteps_WhenStatusOK(self):
 
         input_workflow = {\
                             "id4" : {"depends_on": []},\
