@@ -70,11 +70,11 @@ def steps():
 @app.route('/step/<string:id>', methods=['DELETE'])
 def step(id):
 
-    del WORKFLOW[id]
-
-    return "ACCEPTED", 202
-
-    # curl -X "DELETE" http://127.0.0.1:5000/step/1
+    if id in WORKFLOW.keys():
+        del WORKFLOW[id]
+        return "ACCEPTED", 202
+    else:
+        return f"RESOURCE WITH ID: {id} DOES NOT EXIST", 400
 
 if __name__ == '__main__':
     app.run(debug=True)

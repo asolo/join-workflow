@@ -1,4 +1,5 @@
 
+
 class Utils:
     def hasCircularDependency(self, workflow, curr_id=None, steps_seen=set()):
         
@@ -24,7 +25,9 @@ class Utils:
 
         # travel to the next step in the graph
         for next_id in depends_on:
-            return self.hasCircularDependency(workflow, next_id, steps_seen)
+            
+            if next_id in workflow.keys():
+                return self.hasCircularDependency(workflow, next_id, steps_seen)
 
         # We made it to the end of this chain with no circular dependencies    
         return self.hasCircularDependency(workflow=workflow, steps_seen=steps_seen)
