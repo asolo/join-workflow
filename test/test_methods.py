@@ -1,10 +1,9 @@
 import os
 import sys
-import unittest
-
 sys.path.append(os.path.join(os.path.abspath(os.path.curdir), '..'))
-
+import unittest
 from workflow.app import Methods
+
 
 class TestMethods(unittest.TestCase):
 
@@ -71,7 +70,7 @@ class TestMethods(unittest.TestCase):
         # assert
         self.assertTrue(result)
 
-    def test_getUpdatedStatusOfSteps_WhenStatusOK(self):
+    def test_getUpdatedStatusOfSteps_whenStatusOK(self):
 
         input_workflow = {\
                             "id4" : {"depends_on": []},\
@@ -94,7 +93,7 @@ class TestMethods(unittest.TestCase):
         # assert
         self.assertDictEqual(expected_workflow, result)
 
-    def test_getUpdatedStatusOfSteps_WhenStatusMixed(self):
+    def test_getUpdatedStatusOfSteps_whenStatusMixed(self):
 
         input_workflow = {\
                             "id4" : {"depends_on": []},\

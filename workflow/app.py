@@ -6,17 +6,19 @@ from typing import Dict, Iterable, Set
 # create a flask application
 app = Flask(__name__)
 
-# this is a placeholder datastore
+# this is a placeholder in-memory datastore
 WORKFLOW = {}
 
 @app.route('/steps', methods=['GET', 'POST'])
 def steps():
     """
-    Add and validate a new step for the workflow graph, or return the workflow graph
-    with step statuses evauated.
+    POST adds and validates a new step for the workflow graph. GET returns the workflow graph
+    with step statuses evaluated.
     """
 
     if request.method == 'POST':
+
+            # Validate: ensure the json can be parsed
             try:
                 # convert raw json input to a dictionary
                 convertedDict = json.loads(request.data)
@@ -32,18 +34,18 @@ def steps():
             except (ValueError, KeyError, IndexError, AttributeError):
                 return { "status": "error", "message": "malformed request body"}, 400
 
-            # Validate: Ensure that step ID is unique
+            # Validate: ensure that step Id is unique
             if step_id in WORKFLOW.keys():
                 return { "status": "error", "message": "id already exists"}, 409
 
             # add new step to workflow graph
             WORKFLOW[step_id] = list(convertedDict.values())[0]
 
-            # Validate: check circular dependencies
+            # Validate: check if we have a circular dependency
             methods = Methods()
             if methods.hasCircularDependency(workflow=WORKFLOW):
                 
-                # remove the added step with circular dependency
+                # remove the added step that created a circular dependency
                 del WORKFLOW[step_id]
 
                 # return error
@@ -63,6 +65,7 @@ def step(id):
     Removes a step in the workflow graph. 
     """
 
+    # Validate: Make sure the step exists before attempting to remove
     if id in WORKFLOW.keys():
         del WORKFLOW[id]
         return { "status": "accepted" }, 202
@@ -76,7 +79,7 @@ class Methods:
 
     def hasCircularDependency(self, workflow: Dict) -> bool:
         """
-        Given a workflow graph, evaluates each step in the graph to determine if a circular
+        Given a workflow graph, evaluates the graph to determine if a circular
         dependency exists. 
 
         Args:
@@ -88,13 +91,13 @@ class Methods:
         
         # loop through each step in the workflow graph and test circular dependency chains
         for step_id in workflow.keys():
-            if self.hasCircularDependencyStep(workflow, step_id, set()):
+            if self._hasCircularDependencyStep(workflow, step_id, set()):
                 return True
 
         # we made it through the whole graph with no circular dependencies 
         return False
 
-    def hasCircularDependencyStep(self, workflow: Dict, curr_id: str, steps_seen: Set=set()):
+    def _hasCircularDependencyStep(self, workflow: Dict, curr_id: str, steps_seen: Set=set()):
         """
         Given a workflow graph and a starting step, evaluates the graph linked to that step
         to determine if a circular reference exists in this segment using recursion.
@@ -121,16 +124,15 @@ class Methods:
         # travel to the next step(s) in the graph
         for next_id in depends_on:
             if next_id in workflow.keys():
-                return self.hasCircularDependencyStep(workflow, next_id, steps_seen)
+                return self._hasCircularDependencyStep(workflow, next_id, steps_seen)
 
         # We made it to the end of this segment with no circular dependencies    
         return False
 
     def getUpdatedStatusOfSteps(self, workflow: Dict) -> Dict:
         """
-        Given a workflow graph evaluates the status of each step in terms of its
-        relationship with any dependencies. The returned workflow will contain the 
-        a status object for each step.
+        Given a workflow graph, evaluates the status of each step's dependencies. The returned workflow 
+        will contain the a status object for each step.
 
         Args:
             workflow (Dict): a workflow graph

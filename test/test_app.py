@@ -17,8 +17,8 @@ def test_post_whenemissingfields_then400(app, client):
     
     # arrange
     expected = { "status": "error", "message": "malformed request body"}
-    data = {"id" : {\
-            "name": "A Name for the New Step", \
+    data = {"id" : {
+            "name": "A Name for the New Step", 
             "depends_on": [
                 "an-old-step"
                 ] }}
@@ -34,9 +34,9 @@ def test_post_whenimproperkey_returns400(app, client):
     
     # arrange
     expected = { "status": "error", "message": "malformed request body"}
-    data = {"id" : {\
-            "name": "A Name for the New Step", \
-            "description": "This new step does a new thing.", \
+    data = {"id" : {
+            "name": "A Name for the New Step", 
+            "description": "This new step does a new thing.", 
             "depends_on_____": [
                 "2"
                 ] }}
@@ -51,8 +51,8 @@ def test_post_dataOK_returns200(app, client):
     
     # arrange
     expected = { "status": "ok"}
-    data1 = {"id" : {\
-            "name": "A Name for the New Step", \
+    data1 = {"id" : {
+            "name": "A Name for the New Step",
             "description": "This new step does a new thing.", \
             "depends_on": [
                 "2"
@@ -72,9 +72,9 @@ def test_post_whendupplicateID_returns409(app, client):
 
     # arrange
     expected = { "status": "error", "message": "id already exists"}
-    data1 = {"id" : {\
-            "name": "A Name for the New Step", \
-            "description": "This new step does a new thing.", \
+    data1 = {"id" : {
+            "name": "A Name for the New Step",
+            "description": "This new step does a new thing.",
             "depends_on": [
                 "2"
                 ] }}
@@ -99,15 +99,15 @@ def test_post_whenCircularRefCreated_returns422(app, client):
 
     # arrange
     expected = { "status": "error", "message": "cycles not allowed in workflow graph"}
-    data1 = {"id" : {\
-            "name": "A Name for the New Step", \
-            "description": "This new step does a new thing.", \
+    data1 = {"id" : {
+            "name": "A Name for the New Step",
+            "description": "This new step does a new thing.",
             "depends_on": [
                 "id2"
                 ] }}
-    data2 = {"id2" : {\
-            "name": "A Name for the New Step", \
-            "description": "This new step does a new thing.", \
+    data2 = {"id2" : {
+            "name": "A Name for the New Step",
+            "description": "This new step does a new thing.",
             "depends_on": [
                 "id"
                 ] }}
@@ -272,15 +272,6 @@ def cleanUpDB(client):
     getResponse = client.get("/steps")
     for step in json.loads(getResponse.get_data(as_text=True)).keys():
         
-        # call the delete points to clean up these items
+        # call the delete endpoint to clean up these items
         delResponse = client.delete(f"/step/{step}")
         assert delResponse.status_code == 202
-
-
-
-        # data = {"id" : {\
-        # "name": "A Name for the New Step", \
-        # "description": "This new step does a new thing.", \
-        # "depends_on": [
-        #     "an-old-step"
-        #     ] }}
