@@ -1,8 +1,6 @@
 from flask import app, request
 from flask import Flask
 import json
-
-from step import Step
 from utils import Utils
 
 app = Flask(__name__)
@@ -17,54 +15,41 @@ def steps():
                 # convert raw json input to a dictionary
                 convertedDict = json.loads(request.data)
 
-                # identify the step id, the outer field of the nested json
+                # identify the step id
                 step_id = list(convertedDict.keys())[0]
                 
-                # parse out the remaining fields
+                # parse out the remaining fields for validation
                 step_name = convertedDict[step_id]["name"]
                 step_description = convertedDict[step_id]["description"]
                 step_depends_on = convertedDict[step_id]["depends_on"]
-            except ValueError or TypeError:
-                return "MALFORMED REQUEST BODY", 400
-
-            # initialize a new step
-            new_step = Step(
-                        id=step_id, 
-                        name=step_name, 
-                        description=step_description, 
-                        depends_on=step_depends_on)
-
-            ## TODO: VALIDATIONS
             
+            except ValueError or IndexError:
+                return { "status": "error", "message": "malformed request body"}, 400
+
             # Validate: Ensure that step ID is unique
-            # TODO: Should we remove this, not in requirements
-            if new_step.id in WORKFLOW.keys():
-                return "ID ALREADY EXISTS", 409
+            if step_id in WORKFLOW.keys():
+                return { "status": "error", "message": "id already exists"}, 409
 
-            WORKFLOW[new_step.id] = list(convertedDict.values())[0]
+            # add new step to workflow graph
+            WORKFLOW[step_id] = list(convertedDict.values())[0]
 
-            print(WORKFLOW)
-
-            # check circular dependencies
+            # Validate: check circular dependencies
             utils = Utils()
             if utils.hasCircularDependency(workflow=WORKFLOW, curr_id=None, steps_seen=set()):
-                del WORKFLOW[new_step.id]
-                return "CYCLES NOT ALLOWED IN WORKFLOW GRAPH", 422
+                
+                # remove the added step with circular dependency
+                del WORKFLOW[step_id]
+
+                # return error
+                return { "status": "error", "message": "cycles not allowed in workflow graph"}, 422
             
-            
-            # TODO call a validation sub method to check
-            ## 2. Fields are properly formed
-            ## 3. Set the status (probably)
-            ## 1. Circular dependency
-            return "OK - POST COMPLETE", 200
-        # except ValueError:
-        #     print("Malformed Request Body")
-        #     return "Error Message", 400
-        # except: # TODO REMOVE
-        #     return "Error Message 2", 400
+            # validations past, post successful
+            return {"status": "OK"}, 200
     else:
 
-        return WORKFLOW
+        # prior to returning a GET, set the status object within each step
+        utils = Utils()
+        return utils.getUpdatedStatusOfSteps(WORKFLOW)
 
 
 @app.route('/step/<string:id>', methods=['DELETE'])
@@ -72,7 +57,7 @@ def step(id):
 
     if id in WORKFLOW.keys():
         del WORKFLOW[id]
-        return "ACCEPTED", 202
+        return { "status": "accepted" }, 202
     else:
         return f"RESOURCE WITH ID: {id} DOES NOT EXIST", 400
 

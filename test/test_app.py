@@ -54,5 +54,50 @@ class TestMethods(unittest.TestCase):
         # assert
         self.assertTrue(result)
 
+    def test_getUpdatedStatusOfSteps_WhenStatusOK(self):
+
+        input_workflow = {\
+                            "id4" : {"depends_on": []},\
+                            "id1" : {"depends_on": ["id2"]},\
+                            "id2" : {"depends_on": ["id3", "id4"]},\
+                            "id3" : {"depends_on": []},\
+                        }
+        test = Utils()
+
+        expected_workflow = {\
+                            "id4" : {"depends_on": [], "status":"OK"},\
+                            "id1" : {"depends_on": ["id2"], "status":"OK"},\
+                            "id2" : {"depends_on": ["id3", "id4"], "status":"OK"},\
+                            "id3" : {"depends_on": [], "status":"OK"},\
+                        }
+
+        # act
+        result = test.getUpdatedStatusOfSteps(input_workflow)
+
+        # assert
+        self.assertDictEqual(expected_workflow, result)
+
+    def test_getUpdatedStatusOfSteps_WhenStatusMixed(self):
+
+        input_workflow = {\
+                            "id4" : {"depends_on": []},\
+                            "id1" : {"depends_on": ["id2"]},\
+                            "id2" : {"depends_on": ["id3", "id4"]},\
+                        }
+        test = Utils()
+
+        expected_workflow = {\
+                            "id4" : {"depends_on": [], "status":"OK"},\
+                            "id1" : {"depends_on": ["id2"], "status":"OK"},\
+                            "id2" : {"depends_on": ["id3", "id4"], "status":\
+                                {"error":{"msg":"Missing dependency", "detail":"id3"}}}\
+                        }
+
+        # act
+        result = test.getUpdatedStatusOfSteps(input_workflow)
+
+        # assert
+        self.assertDictEqual(expected_workflow, result)
+
 if __name__ == '__main__':
     unittest.main()

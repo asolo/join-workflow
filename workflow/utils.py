@@ -1,5 +1,4 @@
 
-
 class Utils:
     def hasCircularDependency(self, workflow, curr_id=None, steps_seen=set()):
         
@@ -31,3 +30,27 @@ class Utils:
 
         # We made it to the end of this chain with no circular dependencies    
         return self.hasCircularDependency(workflow=workflow, steps_seen=steps_seen)
+
+    def getUpdatedStatusOfSteps(self, workflow):
+
+        # traverse each step
+        for step_id in workflow:
+            step = workflow[step_id]
+            print(step)
+            depends_on = step["depends_on"]
+            error = False
+
+            # check if dependencies exist
+            for dependency in depends_on:
+                if dependency not in workflow.keys():
+                    error = True
+                    detail = dependency
+
+            # add or set status for each workflow step
+            if error:
+                workflow[step_id]["status"] =  {"error" : \
+                                                {"msg":"Missing dependency", "detail":detail}}
+            else:
+                workflow[step_id]["status"] =  "OK"
+        
+        return workflow
