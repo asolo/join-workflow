@@ -1,4 +1,4 @@
-# join-workflows
+# join-workflow
 ### introduction
 The workflow app will run an API at http://localhost:5000 built with python and the Flask framework to manage a single workfow graph. The API supports a POST endpoint for a adding a single step in a workflow, a GET endpoint for retrieving the entire workflow, and a DELETE endpoint for removing a single step from a workflow.
 
