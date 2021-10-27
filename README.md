@@ -36,30 +36,44 @@ $ python3 -m venv venv
 ```
 
 Then activate the venv:
-```$ . venv/bin/activate```
+```bash
+$ . venv/bin/activate
+```
 
 Install requirements to your venv:
-```$ pip install Flask```
-```$ pip install pytest```
+```bash
+$ pip install Flask
+$ pip install pytest
+```
 
 Start the application by running:
-```$ python3 workflow/app.py```
+```bash
+$ python3 workflow/app.py
+```
 
 # how to execute tests
 From the root directory of `join-workflows`, and with the virtual environment active, execute:
-```python -m pytest```
+```bash
+python -m pytest
+```
 
 # manually testing the API
 Once the application is up. You can use curl commands to post, get, and delete data using the from the terminal. Alternatively, a handy POSTMAN collection has also been included. 
 
 ### POST a step
-```curl -d '{"id" : {"name": "A Name for the New Step", "description": "This new step does a new thing.", "depends_on": ["id1"] }}' -H "Content-Type: application/json" -X POST http://localhost:5000/steps```
+```bash
+curl -d '{"id" : {"name": "A Name for the New Step", "description": "This new step does a new thing.", "depends_on": ["id1"] }}' -H "Content-Type: application/json" -X POST http://localhost:5000/steps
+```
 
 ### GET workflow graph
-```curl http://localhost:5000/steps```
+```bash
+curl http://localhost:5000/steps
+```
 
 ### DELETE a step
-```curl -X DELETE http://localhost:5000/step/id```
+```bash
+curl -X DELETE http://localhost:5000/step/id
+```
 
 # future work
 
