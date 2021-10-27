@@ -22,13 +22,8 @@ def steps():
                 step_description = convertedDict[step_id]["description"]
                 step_depends_on = convertedDict[step_id]["depends_on"]
             
-            except ValueError:
+            except (ValueError, KeyError, IndexError, AttributeError):
                 return { "status": "error", "message": "malformed request body"}, 400
-            except IndexError:
-                return { "status": "error", "message": "malformed request body"}, 400
-            except AttributeError:
-                return { "status": "error", "message": "malformed request body"}, 400
-
 
             # Validate: Ensure that step ID is unique
             if step_id in WORKFLOW.keys():
@@ -53,7 +48,7 @@ def steps():
 
         # prior to returning a GET, set the status object within each step
         methods = Methods()
-        return methods.getUpdatedStatusOfSteps(WORKFLOW)
+        return methods.getUpdatedStatusOfSteps(WORKFLOW), 200
 
 @app.route('/step/<string:id>', methods=['DELETE'])
 def step(id):
