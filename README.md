@@ -76,6 +76,5 @@ curl -X DELETE http://localhost:5000/step/id
 ```
 
 # future work
-
 - Add a datastore: for the purposes of this project, a datastore is created in memory each time this API is launched.
 - More detailed error handling on input validations: currently any incorrect typing, empty request body, or otherwise unexpected input returns the same error path and message. 

@@ -1,7 +1,9 @@
 from flask import app, request
-from flask import Flask, jsonify
+from flask import Flask
 import json
+from typing import Dict, Iterable, Set
 
+# create a flask application
 app = Flask(__name__)
 
 # this is a placeholder datastore
@@ -9,6 +11,11 @@ WORKFLOW = {}
 
 @app.route('/steps', methods=['GET', 'POST'])
 def steps():
+    """
+    Add and validate a new step for the workflow graph, or return the workflow graph
+    with step statuses evauated.
+    """
+
     if request.method == 'POST':
             try:
                 # convert raw json input to a dictionary
@@ -52,6 +59,9 @@ def steps():
 
 @app.route('/step/<string:id>', methods=['DELETE'])
 def step(id):
+    """
+    Removes a step in the workflow graph. 
+    """
 
     if id in WORKFLOW.keys():
         del WORKFLOW[id]
@@ -60,8 +70,21 @@ def step(id):
         return {"status": "error", "message": f"resource with ID: {id} does not exist"}, 400
 
 class Methods:
+    """
+    This class contains methods to calculate relationships within a workflow graph
+    """
 
-    def hasCircularDependency(self, workflow):
+    def hasCircularDependency(self, workflow: Dict) -> bool:
+        """
+        Given a workflow graph, evaluates each step in the graph to determine if a circular
+        dependency exists. 
+
+        Args:
+            workflow(Dict): a workflow graph
+
+        Returns:
+            bool: True indicates a circular reference exists in the workflow
+        """
         
         # loop through each step in the workflow graph and test circular dependency chains
         for step_id in workflow.keys():
@@ -71,7 +94,19 @@ class Methods:
         # we made it through the whole graph with no circular dependencies 
         return False
 
-    def hasCircularDependencyStep(self, workflow, curr_id, steps_seen=set()):
+    def hasCircularDependencyStep(self, workflow: Dict, curr_id: str, steps_seen: Set=set()):
+        """
+        Given a workflow graph and a starting step, evaluates the graph linked to that step
+        to determine if a circular reference exists in this segment using recursion.
+
+        Args:
+            workflow(Dict): a workflow graph
+            curr_id(str): an step id from which to start evaluation
+            steps_seen(Set): a set that records the steps visited
+
+        Returns:
+            bool: True indicates a circular reference exists in this segment of workflow
+        """
         
         # list dependencies of current step
         depends_on = workflow[curr_id]["depends_on"]
@@ -83,16 +118,27 @@ class Methods:
         # step is new, so note that we have been at the current step
         steps_seen.add(curr_id)
 
-        # travel to the next step in the graph
+        # travel to the next step(s) in the graph
         for next_id in depends_on:
-            
             if next_id in workflow.keys():
                 return self.hasCircularDependencyStep(workflow, next_id, steps_seen)
 
-        # We made it to the end of this chain with no circular dependencies    
+        # We made it to the end of this segment with no circular dependencies    
         return False
 
-    def getUpdatedStatusOfSteps(self, workflow):
+    def getUpdatedStatusOfSteps(self, workflow: Dict) -> Dict:
+        """
+        Given a workflow graph evaluates the status of each step in terms of its
+        relationship with any dependencies. The returned workflow will contain the 
+        a status object for each step.
+
+        Args:
+            workflow (Dict): a workflow graph
+
+        Returns:
+            workflow (Dict): a workflow where each step has a status object indicating if dependencies are
+            satisfied. 
+        """
 
         # traverse each step
         for step_id in workflow:
