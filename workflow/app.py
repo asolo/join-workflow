@@ -1,12 +1,16 @@
 from flask import app, request
-from flask import Flask
+from flask import Flask, jsonify
 import json
-from methods import Methods
+from workflow.methods import Methods
 
 app = Flask(__name__)
 
 # this is a placeholder datastore
 WORKFLOW = {}
+
+@app.route('/')
+def index():
+    return jsonify({'hello': 'world'})
 
 @app.route('/steps', methods=['GET', 'POST'])
 def steps():
