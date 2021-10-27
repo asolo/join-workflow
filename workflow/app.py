@@ -1,7 +1,10 @@
 from flask import app, request
 from flask import Flask, jsonify
 import json
+
+# from methods import Methods
 from workflow.methods import Methods
+
 
 app = Flask(__name__)
 
@@ -27,7 +30,7 @@ def steps():
                 step_description = convertedDict[step_id]["description"]
                 step_depends_on = convertedDict[step_id]["depends_on"]
             
-            except ValueError or IndexError:
+            except ValueError or IndexError or AttributeError:
                 return { "status": "error", "message": "malformed request body"}, 400
 
             # Validate: Ensure that step ID is unique
@@ -39,7 +42,7 @@ def steps():
 
             # Validate: check circular dependencies
             methods = Methods()
-            if methods.hasCircularDependency(workflow=WORKFLOW, curr_id=None, steps_seen=set()):
+            if methods.hasCircularDependency(workflow=WORKFLOW):
                 
                 # remove the added step with circular dependency
                 del WORKFLOW[step_id]
@@ -47,7 +50,7 @@ def steps():
                 # return error
                 return { "status": "error", "message": "cycles not allowed in workflow graph"}, 422
             
-            # validations past, post successful
+            # validations passed, post successful
             return {"status": "OK"}, 200
     else:
 
