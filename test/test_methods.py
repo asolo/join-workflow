@@ -4,7 +4,7 @@ import unittest
 
 sys.path.append(os.path.join(os.path.abspath(os.path.curdir), '..'))
 
-from workflow.methods import Methods
+from workflow.app import Methods
 
 class TestMethods(unittest.TestCase):
 

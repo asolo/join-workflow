@@ -15,7 +15,7 @@ def test_post_whenempty_then400(app, client):
     # arrange
     mimetype = 'application/json'
     expected = { "status": "error", "message": "malformed request body"}
-    data = {}
+    data = ""
 
     # act
     response = client.post("/steps", data=json.dumps(data), headers=None)
