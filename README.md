@@ -29,7 +29,7 @@ This API is only configured to run locally. This API is also using a temporary i
 python 3.x
 
 # how to configure and launch application
-Navigate to the root directory of `join-workflows` and create a virtual environment with
+Navigate to the root directory of `join-workflow` and create a virtual environment with
 ```bash
 $ python3 -m venv venv
 ```
@@ -50,7 +50,7 @@ $ python3 workflow/app.py
 ```
 
 # how to execute tests
-From the root directory of `join-workflows`, and with the virtual environment active, execute:
+From the root directory of `join-workflow`, and with the virtual environment active, execute:
 ```bash
 python -m pytest
 ```
