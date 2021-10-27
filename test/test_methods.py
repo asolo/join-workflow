@@ -71,7 +71,7 @@ class TestMethods(unittest.TestCase):
         # assert
         self.assertTrue(result)
 
-    def test_getUpdatedStatusOfSteps_WhenStatusOK(self):
+    def test_getUpdatedStatusOfSteps_WhenStatus(self):
 
         input_workflow = {\
                             "id4" : {"depends_on": []},\
@@ -82,10 +82,10 @@ class TestMethods(unittest.TestCase):
         test = Methods()
 
         expected_workflow = {\
-                            "id4" : {"depends_on": [], "status":"OK"},\
-                            "id1" : {"depends_on": ["id2"], "status":"OK"},\
-                            "id2" : {"depends_on": ["id3", "id4"], "status":"OK"},\
-                            "id3" : {"depends_on": [], "status":"OK"},\
+                            "id4" : {"depends_on": [], "status":"ok"},\
+                            "id1" : {"depends_on": ["id2"], "status":"ok"},\
+                            "id2" : {"depends_on": ["id3", "id4"], "status":"ok"},\
+                            "id3" : {"depends_on": [], "status":"ok"},\
                         }
 
         # act
@@ -104,8 +104,8 @@ class TestMethods(unittest.TestCase):
         test = Methods()
 
         expected_workflow = {\
-                            "id4" : {"depends_on": [], "status":"OK"},\
-                            "id1" : {"depends_on": ["id2"], "status":"OK"},\
+                            "id4" : {"depends_on": [], "status":"ok"},\
+                            "id1" : {"depends_on": ["id2"], "status":"ok"},\
                             "id2" : {"depends_on": ["id3", "id4"], "status":\
                                 {"error":{"msg":"Missing dependency", "detail":"id3"}}}\
                         }

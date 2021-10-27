@@ -43,7 +43,7 @@ def steps():
                 return { "status": "error", "message": "cycles not allowed in workflow graph"}, 422
             
             # validations passed, post successful
-            return {"status": "OK"}, 200
+            return {"status": "ok"}, 200
     else:
 
         # prior to returning a GET, set the status object within each step
@@ -57,7 +57,7 @@ def step(id):
         del WORKFLOW[id]
         return { "status": "accepted" }, 202
     else:
-        return f"RESOURCE WITH ID: {id} DOES NOT EXIST", 400
+        return {"status": "error", "message": f"resource with ID: {id} does not exist"}, 400
 
 class Methods:
 
@@ -111,7 +111,7 @@ class Methods:
                 workflow[step_id]["status"] =  {"error" : \
                                                 {"msg":"Missing dependency", "detail":detail}}
             else:
-                workflow[step_id]["status"] =  "OK"
+                workflow[step_id]["status"] =  "ok"
         
         return workflow
 
