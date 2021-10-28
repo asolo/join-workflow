@@ -15,7 +15,7 @@ POST requests should be formed with the following parameters in JSON:
 
 Malformed POST requests will return a 400 error response. 
 
-Workflow steps can refer to other steps in the graph. POSTing a workflow step which introduces a circuler reference will be rejected with a 422 response. 
+Workflow steps can refer to other steps in the graph. POSTing a workflow step which introduces a circular reference will be rejected with a 422 response. 
 
 Workflow step IDs must be unique. Repeated step Ids will be rejected with a 409 response. 
 
@@ -57,7 +57,7 @@ python -m pytest
 ```
 
 # manually testing the API
-Once the application is up. You can use curl commands to post, get, and delete data using the from the terminal. Alternatively, a handy POSTMAN collection has also been included. 
+Once the application is up, you can use curl commands to POST, GET, and DELETE data from the terminal. Alternatively, a handy POSTMAN collection has also been included. 
 
 ### POST a step
 ```bash
