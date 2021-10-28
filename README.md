@@ -9,7 +9,8 @@ POST requests should be formed with the following parameters in JSON:
    "name":"A Name for the New Step",
    "description":"This new step does a new thing.",
    "depends_on":[
-      "an-old-step"
+      "an-old-step"]
+}
 ```
 
 Malformed POST requests will return a 400 error response. 
