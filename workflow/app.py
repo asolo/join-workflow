@@ -164,25 +164,13 @@ class Methods:
         # next use the reverse dependency chain to set the upstream status of each error ending step
         for step_id in error_end_steps.keys():
 
-            top_of_chain = False
-            curr_step_id = step_id
-            missing_id = error_end_steps[step_id]
+            # recursively run up the chain from each error_end_step
+            self._writeErrorSteps(workflow, reverse_dependencies, step_id, error_end_steps[step_id])
 
-            while not top_of_chain:
-                if "status" not in workflow[curr_step_id]:
-                    workflow[step_id]["status"] = {"error": {"msg": "Missing dependency", "detail": missing_id}}
-
-                next_step_ids = reverse_dependencies[step_id]
-
-
-
-
-            # add or set status for each workflow step
-            # if error:
-            #     workflow[step_id]["status"] =  {"error" : \
-            #                                     {"msg":"Missing dependency", "detail":detail}}
-            # else:
-            #     workflow[step_id]["status"] =  "ok"
+        # we made it through the whole graph, assign an "ok" status to non-error steps
+        for step_id in workflow.keys():
+            if "status" not in workflow[step_id]:
+                workflow[step_id]["status"] = "ok"
 
         return workflow
 
@@ -225,20 +213,46 @@ class Methods:
     #     return
 
     def getReverseDependencies(self, workflow):
-        # reverse_dependencies = {}
-        reverse_dependencies = []
-
+        reverse_dependencies = {}
 
         for step_id in workflow.keys():
             depends_on = workflow[step_id]["depends_on"]
             for dependency in depends_on:
-                # if dependency not in reverse_dependencies:
-                #     reverse_dependencies[dependency] = [step_id]
-                # else:
-                #     reverse_dependencies[dependency].append(step_id)
-                reverse_dependencies.append([dependency, step_id])
+                if dependency not in reverse_dependencies:
+                    reverse_dependencies[dependency] = [step_id]
+                else:
+                    reverse_dependencies[dependency].append(step_id)
 
         return reverse_dependencies
+
+    def _writeErrorSteps(self, workflow: Dict, reverse_dependencies: Dict, curr_id: str, error_step: str):
+        """
+
+        Args:
+            workflow(Dict): a workflow graph
+
+
+        Returns:
+            bool: True indicates a circular reference exists in this segment of workflow
+        """
+
+        # note the error details for this step if it has not been attributed yet
+        if "status" not in workflow[curr_id]:
+            workflow[curr_id]["status"] = {"error": {"msg": "Missing dependency", "detail": error_step}}
+
+        # check if the top of the dependency chain has been reached, and exit
+        if curr_id not in reverse_dependencies.keys():
+            return
+
+        reverse_depends_on = reverse_dependencies[curr_id]
+
+        # travel to the next step(s) in the graph
+        for next_id in reverse_depends_on:
+            if next_id in workflow.keys():
+                self._writeErrorSteps(workflow, reverse_dependencies, next_id, error_step)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

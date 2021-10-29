@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="05414b61-1e8f-43f4-8670-cd22b30b51eb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/test_methods.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_methods.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/workflow/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/workflow/app.py" afterDir="false" />
     </list>
@@ -26,7 +27,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies_multipledependencies_case">
+  <component name="RunManager" selected="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies_singledependencies_case">
     <configuration name="RunApp.py" type="PythonConfigurationType" factoryName="Python">
       <module name="join-workflow" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -59,20 +60,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;test_app.test_get_whenTwoObjects_returns200&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for test_methods.TestMethods.test_getUpdatedStatusOfSteps_whenStatusMixed" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="join-workflow" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_methods.TestMethods.test_getUpdatedStatusOfSteps_whenStatusMixed&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -118,21 +105,35 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_methods.TestMethods.test_reverse_dependencies_singledependencies_case" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="join-workflow" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_methods.TestMethods.test_reverse_dependencies_singledependencies_case&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.RunApp.py" />
-      <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_getUpdatedStatusOfSteps_whenStatusMixed" />
       <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_getUpdatedStatusOfSteps_whenStatusOK" />
       <item itemvalue="Python tests.Python tests for test_app.test_get_whenTwoObjects_returns200" />
       <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies" />
       <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies_multipledependencies_case" />
+      <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies_singledependencies_case" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies_singledependencies_case" />
         <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies_multipledependencies_case" />
         <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_reverse_dependencies" />
         <item itemvalue="Python tests.Python tests for test_app.test_get_whenTwoObjects_returns200" />
         <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_getUpdatedStatusOfSteps_whenStatusOK" />
-        <item itemvalue="Python tests.Python tests for test_methods.TestMethods.test_getUpdatedStatusOfSteps_whenStatusMixed" />
       </list>
     </recent_temporary>
   </component>

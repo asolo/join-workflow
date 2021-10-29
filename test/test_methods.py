@@ -138,7 +138,6 @@ class TestMethods(unittest.TestCase):
         self.assertDictEqual(expected, result)
 
     def test_reverse_dependencies_multipledependencies_case(self):
-
         # arrange
         input_workflow = {
             "id1": {"depends_on": ["id2", "id4"]},
@@ -148,31 +147,21 @@ class TestMethods(unittest.TestCase):
             "id4": {"depends_on": ["id5"]}
             }
 
-        # expected = { \
-        #     "id2": ["id1"],
-        #     "id3": ["id2"],
-        #     "id4": ["id1"],
-        #     "id5": ["id2", "id4"],
-        #     "id6": ["id3"],
-        #     "id7": ["id5"]
-        #     }
-
-        expected = [ \
-            ["id2", "id1"],
-            ["id3", "id2"],
-            ["id4", "id1"],
-            ["id5", "id2"],
-            ["id5", "id4"],
-            ["id6", "id3"],
-            ["id7", "id5"]
-            ]
+        expected = { \
+            "id2": ["id1"],
+            "id3": ["id2"],
+            "id4": ["id1"],
+            "id5": ["id2", "id4"],
+            "id6": ["id3"],
+            "id7": ["id5"]
+            }
 
         # act
         test = Methods()
         result = test.getReverseDependencies(input_workflow)
 
         # assert
-        self.assertListEqual(expected, result)
+        self.assertDictEqual(expected, result)
 
 
 if __name__ == '__main__':
