@@ -131,7 +131,7 @@ class Methods:
 
     def getUpdatedStatusOfSteps(self, workflow: Dict) -> Dict:
         """
-        Given a workflow graph, evaluates the status of each step's dependencies. The returned workflow 
+        Given a workflow graph, evaluates the status of each step's dependencies. The returned workflow
         will contain the a status object for each step.
 
         Args:
@@ -139,8 +139,11 @@ class Methods:
 
         Returns:
             workflow (Dict): a workflow where each step has a status object indicating if dependencies are
-            satisfied. 
+            satisfied.
         """
+
+        # create a dict of steps which err out at end failed dependency
+        error_end_steps = {}
 
         # traverse each step
         for step_id in workflow:
@@ -150,18 +153,92 @@ class Methods:
 
             # check if dependencies exist
             for dependency in depends_on:
-                if dependency not in workflow.keys():
-                    error = True
-                    detail = dependency
+
+                # if a first missing dependency is found for a step, add to error dict
+                if dependency not in workflow.keys() and step_id not in error_end_steps:
+                    error_end_steps[step_id] = dependency
+
+        # create a reverse dependency dictionary
+        reverse_dependencies = self.getReverseDependencies(workflow)
+
+        # next use the reverse dependency chain to set the upstream status of each error ending step
+        for step_id in error_end_steps.keys():
+
+            top_of_chain = False
+            curr_step_id = step_id
+            missing_id = error_end_steps[step_id]
+
+            while not top_of_chain:
+                if "status" not in workflow[curr_step_id]:
+                    workflow[step_id]["status"] = {"error": {"msg": "Missing dependency", "detail": missing_id}}
+
+                next_step_ids = reverse_dependencies[step_id]
+
+
+
 
             # add or set status for each workflow step
-            if error:
-                workflow[step_id]["status"] =  {"error" : \
-                                                {"msg":"Missing dependency", "detail":detail}}
-            else:
-                workflow[step_id]["status"] =  "ok"
-        
+            # if error:
+            #     workflow[step_id]["status"] =  {"error" : \
+            #                                     {"msg":"Missing dependency", "detail":detail}}
+            # else:
+            #     workflow[step_id]["status"] =  "ok"
+
         return workflow
+
+    # def getUpdatedStatusOfSteps(self, workflow: Dict) -> Dict:
+    #
+    #     # loop through each step in the workflow graph and set dependency chain status
+    #     for step_id in workflow.keys():
+    #         self._getUpdatedStatusOfStep(workflow, step_id, set())
+    #
+    #     # we made it through the whole graph, assign an "ok" status to non-error steps
+    #     for step_id in workflow.keys():
+    #         if "status" not in workflow[step_id]:
+    #             workflow[step_id]["status"] = "ok"
+    #
+    #     return workflow
+    #
+    # def _getUpdatedStatusOfStep(self, workflow: Dict, curr_id: str, steps_seen: Set = set()) -> None:
+    #
+    #     # list dependencies of current step
+    #     depends_on = workflow[curr_id]["depends_on"]
+    #
+    #     # step is new, so note that we have been at the current step
+    #     steps_seen.add(curr_id)
+    #
+    #
+    #     if len(depends_on) == 0:
+    #
+    #
+    #     # travel to the next step(s) in the graph if it exists
+    #     for next_id in depends_on:
+    #         if next_id in workflow.keys():
+    #             self._getUpdatedStatusOfStep(workflow, next_id, steps_seen)
+    #         else:
+    #             # we have reached a break in dependency chain. Use the set to write an error status where not written
+    #             # yet along this dependency chain
+    #             for step_id in steps_seen:
+    #                 # first, check if they have a status or if an error is already set
+    #                 if "status" not in workflow[step_id]:
+    #                     workflow[step_id]["status"] = {"error": {"msg": "Missing dependency", "detail": next_id}}
+    #     return
+
+    def getReverseDependencies(self, workflow):
+        # reverse_dependencies = {}
+        reverse_dependencies = []
+
+
+        for step_id in workflow.keys():
+            depends_on = workflow[step_id]["depends_on"]
+            for dependency in depends_on:
+                # if dependency not in reverse_dependencies:
+                #     reverse_dependencies[dependency] = [step_id]
+                # else:
+                #     reverse_dependencies[dependency].append(step_id)
+                reverse_dependencies.append([dependency, step_id])
+
+        return reverse_dependencies
 
 if __name__ == '__main__':
     app.run(debug=True)
