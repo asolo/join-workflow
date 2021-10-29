@@ -116,6 +116,38 @@ class TestMethods(unittest.TestCase):
         # assert
         self.assertDictEqual(expected_workflow, result)
 
+    def test_getUpdatedStatusOfSteps_whenDependenciesOverlap(self):
+
+        # arrange
+        input_workflow = {
+            "id1": {"depends_on": ["id2", "id4"]},
+            "id2": {"depends_on": ["id3", "id5"]},
+            "id3": {"depends_on": ["id6"]},
+            "id4": {"depends_on": ["id5"]},
+            "id5": {"depends_on": ["id7"]}
+            }
+
+        expected_workflow = {\
+            "id1" : {"depends_on": ["id2", "id4"], "status":
+                {"error": {"msg": "Missing dependency", "detail": "id6"}}},
+            "id2" : {"depends_on": ["id3", "id5"], "status":
+                {"error": {"msg": "Missing dependency", "detail": "id6"}}},
+            "id3" : {"depends_on": ["id6"], "status":
+                {"error":{"msg":"Missing dependency", "detail":"id6"}}},
+            "id4": {"depends_on": ["id5"], "status":
+                {"error": {"msg": "Missing dependency", "detail": "id7"}}},
+            "id5": {"depends_on": ["id7"], "status":
+                {"error": {"msg": "Missing dependency", "detail": "id7"}}},
+            }
+
+        test = Methods()
+
+        # act
+        result = test.getUpdatedStatusOfSteps(input_workflow)
+
+        # assert
+        self.assertDictEqual(expected_workflow, result)
+
     def test_reverse_dependencies_singledependencies_case(self):
 
         # arrange
