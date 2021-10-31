@@ -116,12 +116,12 @@ class Methods:
         # traverse each step
         for step_id in workflow:
 
-            # clear any previous status
-
+            # clear any previous status objects
+            if "status" in workflow[step_id]:
+                del workflow[step_id]["status"]
 
             step = workflow[step_id]
             depends_on = step["depends_on"]
-            error = False
 
             # check if dependencies exist
             for dependency in depends_on:
