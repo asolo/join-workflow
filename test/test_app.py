@@ -198,6 +198,78 @@ def test_get_whenTwoObjects_returns200(app, client):
     # clean up
     cleanUpDB(client)
 
+def test_get_whenStatusChanges_returnsNoErrorsAfterUpdate(app, client):
+
+    # arrange
+    expected1 = {
+        "another-step": {
+            "name": "Another Step Name",
+            "description": "This step does _another_ thing",
+            "depends_on": [
+                "a-cool-step"],
+            "status": {"error": {
+                "msg": "Missing dependency",
+                "detail": "a-cool-step"}
+            }}
+    }
+
+    expected2 = {
+        "a-cool-step": {
+            "name": "Human-readable Step Name",
+            "description": "This step does a thing",
+            "depends_on": [],
+            "status": "ok"
+        },
+        "another-step": {
+            "name": "Another Step Name",
+            "description": "This step does _another_ thing",
+            "depends_on": [
+                "a-cool-step"],
+            "status": "ok"}
+            }
+
+    data1 = {"another-step": {
+        "name": "Another Step Name",
+        "description": "This step does _another_ thing",
+        "depends_on": [
+            "a-cool-step"
+            ]}}
+
+    data2 = {"a-cool-step": {
+        "name": "Human-readable Step Name",
+        "description": "This step does a thing",
+        "depends_on": []}}
+
+    # insert a first object that will be accepted
+    response1 = client.post("/steps", data=json.dumps(data1), headers=None)
+    assert response1.status_code == 200
+
+    # hit the get endpint for the first time
+    getResponse1 = client.get("/steps")
+
+    actual1 = json.loads(getResponse1.get_data(as_text=True))
+
+    # assert the first expected response which has an error on the object
+    assert getResponse1.status_code == 200
+    TestCase().assertDictEqual(expected1, actual1)
+
+    # insert a second object that will be accepted
+    response2 = client.post("/steps", data=json.dumps(data2), headers=None)
+    assert response2.status_code == 200
+
+    # hit the get endpint
+    getResponse2 = client.get("/steps")
+
+    actual2 = json.loads(getResponse2.get_data(as_text=True))
+
+    # assert
+    assert getResponse2.status_code == 200
+    assert len(actual2.keys()) == 2
+    TestCase().assertDictEqual(expected2, actual2)
+
+    # clean up
+    cleanUpDB(client)
+
 def test_delete_whenDoesNotExist_returns400(app, client):
     
     # arrange

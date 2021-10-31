@@ -115,6 +115,10 @@ class Methods:
 
         # traverse each step
         for step_id in workflow:
+
+            # clear any previous status
+
+
             step = workflow[step_id]
             depends_on = step["depends_on"]
             error = False
