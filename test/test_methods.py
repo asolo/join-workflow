@@ -29,7 +29,7 @@ class TestMethods(unittest.TestCase):
         input_workflow = {\
                             "id1" : {"depends_on": ["id2"]},\
                             "id2" : {"depends_on": ["id3", "id4"]},\
-                            "id3" : {"depends_on": ["id1"]},\
+                            "id3" : {"depends_on": ["id4", "id1"]},\
                             "id4" : {"depends_on": []}\
                         }
 
