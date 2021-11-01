@@ -1,1 +1,1 @@
-web: cd workflow && python3 app.py
+web: cd workflow && gunicorn run:app -b "0.0.0.0:$PORT" -w 3
