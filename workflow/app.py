@@ -91,7 +91,7 @@ class Methods:
         
         # loop through each step in the workflow graph and test circular dependency chains
         for step_id in workflow.keys():
-            if self._hasCircularDependencyStep(workflow, step_id, set()):
+            if self._hasCircularDependencyStep(workflow, step_id):
                 return True
 
         # we made it through the whole graph with no circular dependencies 
@@ -175,7 +175,7 @@ class Methods:
 
         return reverse_dependencies
 
-    def _hasCircularDependencyStep(self, workflow: Dict, curr_id: str, steps_seen: Set = set()):
+    def _hasCircularDependencyStep(self, workflow: Dict, curr_id: str, starting_step: str = None, steps_seen_count: int = 0):
         """
         Given a workflow graph and a starting step, evaluates the graph linked to that step
         to determine if a circular reference exists in this segment using recursion.
@@ -183,29 +183,33 @@ class Methods:
         Args:
             workflow(Dict): a workflow graph
             curr_id(str): an step id from which to start evaluation
-            steps_seen(Set): a set that records the steps visited
+            starting_step(str): a record of the first step evaluated, so that if we return to this, we know we have a
+            circular reference
+            steps_seen_count(int): a count of steps visited in recursion
 
         Returns:
             bool: True indicates a circular reference exists in this segment of workflow
         """
 
+        # increment steps seen and init starting step
+        steps_seen_count += 1
+        if starting_step is None:
+            starting_step = curr_id
+
         # list dependencies of current step
         depends_on = workflow[curr_id]["depends_on"]
 
-        # check if this step has already been visited, indicating a circular dependency
-        if curr_id in steps_seen:
+        # check if this step is where we started from, indicating a circular dependency
+        if curr_id == starting_step and steps_seen_count > 1:
             return True
-
-        # step is new, so note that we have been at the current step
-        steps_seen.add(curr_id)
 
         # travel to the next step(s) in the graph
         for next_id in depends_on:
             if next_id in workflow.keys():
-                return self._hasCircularDependencyStep(workflow, next_id, steps_seen)
+                if self._hasCircularDependencyStep(workflow, next_id, starting_step, steps_seen_count):
+                    return True
 
         # We made it to the end of this segment with no circular dependencies
-        return False
 
     def _writeErrorSteps(self, workflow: Dict, reverse_dependencies: Dict, curr_id: str, error_step: str) -> None:
         """
