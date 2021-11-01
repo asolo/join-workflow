@@ -1,1 +1,1 @@
-web: python3 workflow.app.py
+web: cd workflow && python3 app.py
