@@ -35,23 +35,22 @@ def steps():
                 return { "status": "error", "message": "malformed request body"}, 400
 
             # Validate: ensure that step Id is unique
-            if step_id in WORKFLOW.keys():
+            if step_id in WORKFLOW:
                 return { "status": "error", "message": "id already exists"}, 409
 
-            # add new step to workflow graph
-            WORKFLOW[step_id] = list(convertedDict.values())[0]
+            # add new step to a copy of the workflow graph
+            workflow_copy = WORKFLOW
+            workflow_copy[step_id] = list(convertedDict.values())[0]
 
             # Validate: check if we have a circular dependency
             methods = Methods()
-            if methods.hasCircularDependency(workflow=WORKFLOW):
-                
-                # remove the added step that created a circular dependency
-                del WORKFLOW[step_id]
+            if methods.hasCircularDependency(workflow_copy):
 
                 # return error
                 return { "status": "error", "message": "cycles not allowed in workflow graph"}, 422
             
-            # validations passed, post successful
+            # validations passed, add to database, then return status OK. 
+            WORKFLOW[step_id] = list(convertedDict.values())[0]
             return {"status": "ok"}, 200
     else:
 
@@ -66,7 +65,7 @@ def step(id):
     """
 
     # Validate: Make sure the step exists before attempting to remove
-    if id in WORKFLOW.keys():
+    if id in WORKFLOW:
         del WORKFLOW[id]
         return { "status": "accepted" }, 202
     else:
@@ -90,7 +89,7 @@ class Methods:
         """
         
         # loop through each step in the workflow graph and test circular dependency chains
-        for step_id in workflow.keys():
+        for step_id in workflow:
             if self._hasCircularDependencyStep(workflow, step_id):
                 return True
 
@@ -127,20 +126,20 @@ class Methods:
             for dependency in depends_on:
 
                 # if a first missing dependency is found for a step, add to error dict
-                if dependency not in workflow.keys() and step_id not in error_end_steps:
+                if dependency not in workflow and step_id not in error_end_steps:
                     error_end_steps[step_id] = dependency
 
         # create a reverse dependency dictionary
         reverse_dependencies = self.getReverseDependencies(workflow)
 
         # next use the reverse dependency chain to set the upstream status of each error ending step
-        for step_id in error_end_steps.keys():
+        for step_id in error_end_steps:
 
             # recursively run up the chain from each error_end_step
-            self._writeErrorSteps(workflow, reverse_dependencies, step_id, error_end_steps[step_id])
+            workflow = self._writeErrorSteps(workflow, reverse_dependencies, step_id, error_end_steps[step_id])
 
         # we made it through the whole graph, assign an "ok" status to non-error steps
-        for step_id in workflow.keys():
+        for step_id in workflow:
             if "status" not in workflow[step_id]:
                 workflow[step_id]["status"] = "ok"
 
@@ -161,7 +160,7 @@ class Methods:
         reverse_dependencies = {}
 
         # loop through all dependencies
-        for step_id in workflow.keys():
+        for step_id in workflow:
             depends_on = workflow[step_id]["depends_on"]
             for dependency in depends_on:
 
@@ -205,13 +204,13 @@ class Methods:
 
         # travel to the next step(s) in the graph
         for next_id in depends_on:
-            if next_id in workflow.keys():
+            if next_id in workflow:
                 if self._hasCircularDependencyStep(workflow, next_id, starting_step, steps_seen_count):
                     return True
 
         # We made it to the end of this segment with no circular dependencies
 
-    def _writeErrorSteps(self, workflow: Dict, reverse_dependencies: Dict, curr_id: str, error_step: str) -> None:
+    def _writeErrorSteps(self, workflow: Dict, reverse_dependencies: Dict, curr_id: str, error_step: str) -> Dict:
         """
         A recursive function which takes en endpoint of a dependency chain (the "error_step") and writes the error
         message to all upstream dependencies which flow to that step. Writes changes to workflow object in-line.
@@ -221,6 +220,8 @@ class Methods:
             reverse_dependencies(Dict): A dictionary containing the upstream dependencies of dependent steps
             curr_id: the id of the step currently being written to
             error_step: the missing dependency step which is causing the error. (Will be written to "status.detail")
+
+        workflow (Dict): a workflow where steps with an error in dependency chain have been written to
         """
 
         # note the error details for this step if it has not been attributed yet
@@ -228,15 +229,17 @@ class Methods:
             workflow[curr_id]["status"] = {"error": {"msg": "Missing dependency", "detail": error_step}}
 
         # check if the top of the dependency chain has been reached, and exit
-        if curr_id not in reverse_dependencies.keys():
-            return
+        if curr_id not in reverse_dependencies:
+            return workflow
 
         reverse_depends_on = reverse_dependencies[curr_id]
 
         # travel to the next step(s) in the graph
         for next_id in reverse_depends_on:
-            if next_id in workflow.keys():
-                self._writeErrorSteps(workflow, reverse_dependencies, next_id, error_step)
+            if next_id in workflow:
+                workflow = self._writeErrorSteps(workflow, reverse_dependencies, next_id, error_step)
+
+        return workflow
 
 if __name__ == '__main__':
     app.run(debug=True)
