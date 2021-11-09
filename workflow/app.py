@@ -38,20 +38,24 @@ def steps():
             if step_id in WORKFLOW.keys():
                 return { "status": "error", "message": "id already exists"}, 409
 
-            # add new step to workflow graph
-            WORKFLOW[step_id] = list(convertedDict.values())[0]
+            # add new step to a copy of the workflow graph
+            workflow_copy = WORKFLOW
+
+
+            workflow_copy[step_id] = list(convertedDict.values())[0]
 
             # Validate: check if we have a circular dependency
             methods = Methods()
-            if methods.hasCircularDependency(workflow=WORKFLOW):
+            if methods.hasCircularDependency(workflow_copy):
                 
-                # remove the added step that created a circular dependency
-                del WORKFLOW[step_id]
+                # # remove the added step that created a circular dependency
+                # del WORKFLOW[step_id]
 
                 # return error
                 return { "status": "error", "message": "cycles not allowed in workflow graph"}, 422
             
-            # validations passed, post successful
+            # validations passed, add to database, then return status OK. 
+            WORKFLOW[step_id] = list(convertedDict.values())[0]
             return {"status": "ok"}, 200
     else:
 
