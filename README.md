@@ -1,6 +1,8 @@
 # join-workflow
 ### introduction
-The workflow app will run an API at http://localhost:5000 built with python and the Flask framework to manage a single workfow graph. The API supports a POST endpoint for a adding a single step in a workflow, a GET endpoint for retrieving the entire workflow, and a DELETE endpoint for removing a single step from a workflow.
+This is a learning project for creating a flask api. 
+
+The workflow app will run an API built with python and the Flask framework to manage a single workfow graph. The API supports a POST endpoint for a adding a single step in a workflow, a GET endpoint for retrieving the entire workflow, and a DELETE endpoint for removing a single step from a workflow.
 
 ### functionality
 POST requests should be formed with the following parameters in JSON:
@@ -24,7 +26,7 @@ When executing a GET request, the entire workflow graph is returned. In executin
 Finally, the DELETE endpoint will remove a single step by including the Id at the end of the URL endpoint. (`.../step/<id>`). If a specified Id to be deleted does not exist, a 400 response will be returned.
 
 ### notes
-This API is only configured to run locally. This API is also using a temporary in-memory data store, so each time the app is restarted, the datastore (containing the workflow graph) will be empty. 
+This API is does not have a database, and is using a temporary in-memory data store, so each time the app is restarted, the datastore (containing the workflow graph) will be empty.
 
 # prerequisites:
 python 3.x
@@ -56,7 +58,7 @@ From the root directory of `join-workflow`, and with the virtual environment act
 python -m pytest
 ```
 
-# manually testing the API
+# manually testing the API (locally)
 Once the application is up, you can use curl commands to POST, GET, and DELETE data from the terminal. Alternatively, a handy POSTMAN collection has also been included. 
 
 ### POST a step
@@ -72,6 +74,13 @@ curl http://localhost:5000/steps
 ### DELETE a step
 ```bash
 curl -X DELETE http://localhost:5000/step/id
+```
+
+### heroku deployment
+This app is currently configured to deploy via a Heroku staging environment from the main branch. The above curl commands can be tested there by replacing `localhost:5000` with `join-workflow.herokuapp.com`. For example, to GET:
+
+```bash
+curl http://join-workflow.herokuapp.com/steps
 ```
 
 # future work
